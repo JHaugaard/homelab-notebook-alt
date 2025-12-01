@@ -1,62 +1,79 @@
-/* Import distinctive fonts - must come before Tailwind */
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Source+Sans+3:wght@300;400;500;600&display=swap');
-
 @import 'tailwindcss';
 
 /*
- * Homelab Notebook - Notion-inspired Light Theme
- * An editorial warmth aesthetic with refined typography
+ * Homelab Notebook - Notion-inspired Theme
+ * Clean, functional aesthetic with warm undertones
  */
 
-/* Custom CSS variables for Notion-like theming */
+/* Custom CSS variables */
 :root {
-	/* Warm off-white base - signature Notion feel */
+	/* Warm off-white base - Notion signature */
 	--color-background: #ffffff;
 	--color-background-secondary: #fbfbfa;
 	--color-surface: #ffffff;
 	--color-surface-hover: #f7f6f3;
 	--color-surface-active: #efeeeb;
 
-	/* Sophisticated border colors */
+	/* Subtle border colors - barely visible */
 	--color-border: rgba(55, 53, 47, 0.09);
 	--color-border-strong: rgba(55, 53, 47, 0.16);
+	--color-border-subtle: rgba(55, 53, 47, 0.05);
 
-	/* Text hierarchy */
+	/* Text hierarchy - Notion's warm gray */
 	--color-text: #37352f;
 	--color-text-secondary: #37352f;
 	--color-text-muted: #9b9a97;
-	--color-text-light: #b4b4b4;
+	--color-text-light: #c4c4c4;
 
-	/* Accent - warm terracotta inspired */
-	--color-primary: #eb5757;
-	--color-primary-hover: #d64545;
-	--color-primary-subtle: rgba(235, 87, 87, 0.08);
+	/* Primary accent - Notion blue */
+	--color-primary: #2383e2;
+	--color-primary-hover: #1a73d1;
+	--color-primary-dark: #1666ba;
+	--color-primary-subtle: rgba(35, 131, 226, 0.08);
 
-	/* Additional semantic colors */
-	--color-blue: #2383e2;
-	--color-green: #0f7b6c;
-	--color-yellow: #dfab01;
-	--color-orange: #d9730d;
-	--color-pink: #c14c8a;
-	--color-purple: #6940a5;
+	/* Mode colors - subtle and sophisticated */
+	--color-mode-research: #2383e2;
+	--color-mode-research-subtle: rgba(35, 131, 226, 0.08);
+	--color-mode-research-muted: rgba(35, 131, 246, 0.15);
 
-	/* Typography */
-	--font-serif: 'Newsreader', Georgia, 'Times New Roman', serif;
-	--font-sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-	--font-mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, monospace;
+	--color-mode-project: #d9730d;
+	--color-mode-project-subtle: rgba(217, 115, 13, 0.08);
+	--color-mode-project-muted: rgba(217, 115, 13, 0.15);
+
+	--color-mode-reference: #0f7b6c;
+	--color-mode-reference-subtle: rgba(15, 123, 108, 0.08);
+	--color-mode-reference-muted: rgba(15, 123, 108, 0.15);
+
+	/* Status colors */
+	--color-success: #0f7b6c;
+	--color-warning: #d9730d;
+	--color-error: #e03e3e;
+	--color-info: #2383e2;
+
+	/* Typography - System sans throughout */
+	--font-display: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+	--font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+	--font-mono: 'SFMono-Regular', Menlo, Consolas, 'PT Mono', 'Liberation Mono', Courier, monospace;
 
 	/* Spacing rhythm */
 	--space-unit: 4px;
 
-	/* Shadows - very subtle */
-	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-	--shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
-	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08);
+	/* Shadows - very subtle, Notion-style */
+	--shadow-xs: rgba(15, 15, 15, 0.02) 0px 0px 0px 1px;
+	--shadow-sm: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 2px 4px;
+	--shadow-md: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 3px 6px, rgba(15, 15, 15, 0.2) 0px 9px 24px;
+	--shadow-lg: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 5px 10px, rgba(15, 15, 15, 0.2) 0px 15px 40px;
+	--shadow-xl: rgba(15, 15, 15, 0.05) 0px 0px 0px 1px, rgba(15, 15, 15, 0.1) 0px 7px 14px, rgba(15, 15, 15, 0.2) 0px 24px 60px;
 
-	/* Radius - soft but not too round */
+	/* Radius - soft, Notion-style */
 	--radius-sm: 3px;
 	--radius-md: 6px;
 	--radius-lg: 8px;
+	--radius-xl: 12px;
+
+	/* Sidebar dimensions */
+	--sidebar-width: 260px;
+	--sidebar-collapsed-width: 0px;
 }
 
 /* Base styles */
@@ -76,28 +93,48 @@ body {
 	background-color: var(--color-background);
 	color: var(--color-text);
 	font-family: var(--font-sans);
-	font-size: 16px;
+	font-size: 14px;
 	line-height: 1.5;
-	letter-spacing: -0.011em;
 }
 
-/* Typography */
+/* Typography - Clean sans-serif */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-	font-family: var(--font-serif);
+	font-family: var(--font-sans);
 	font-weight: 600;
 	letter-spacing: -0.02em;
 	color: var(--color-text);
 }
 
+h1 {
+	font-size: 1.75rem;
+	line-height: 1.2;
+}
+
+h2 {
+	font-size: 1.375rem;
+	line-height: 1.25;
+}
+
+h3 {
+	font-size: 1.125rem;
+	line-height: 1.3;
+}
+
+/* Tabular numbers for cleaner data display */
+.tabular-nums {
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: 'tnum';
+}
+
 /* Scrollbar styling - minimal and elegant */
 ::-webkit-scrollbar {
-	width: 10px;
-	height: 10px;
+	width: 8px;
+	height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -105,25 +142,21 @@ h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-	background: rgba(55, 53, 47, 0.16);
-	border-radius: 10px;
-	border: 3px solid transparent;
-	background-clip: padding-box;
+	background: var(--color-border-strong);
+	border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: rgba(55, 53, 47, 0.3);
-	border: 3px solid transparent;
-	background-clip: padding-box;
+	background: var(--color-text-muted);
 }
 
 /* Focus styles - subtle ring */
 :focus-visible {
 	outline: none;
-	box-shadow: 0 0 0 2px var(--color-background), 0 0 0 4px var(--color-blue);
+	box-shadow: 0 0 0 1px rgba(35, 131, 226, 0.35), 0 0 0 3px rgba(35, 131, 226, 0.2);
 }
 
-/* Selection - warm highlight */
+/* Selection - Notion blue highlight */
 ::selection {
 	background-color: rgba(35, 131, 226, 0.28);
 }
@@ -131,24 +164,12 @@ h6 {
 /* Links */
 a {
 	color: var(--color-text);
-	text-decoration: underline;
-	text-decoration-color: var(--color-border-strong);
-	text-underline-offset: 2px;
-	transition: text-decoration-color 0.15s ease;
+	text-decoration: none;
+	transition: color 0.15s ease;
 }
 
 a:hover {
-	text-decoration-color: var(--color-text);
-}
-
-/* Notion-style hover background animation */
-@keyframes notion-hover {
-	from {
-		background-color: transparent;
-	}
-	to {
-		background-color: var(--color-surface-hover);
-	}
+	color: var(--color-primary);
 }
 
 /* Placeholder styling */
@@ -157,50 +178,16 @@ a:hover {
 	opacity: 1;
 }
 
-/* Custom utility classes for Notion aesthetic */
-.notion-heading {
-	font-family: var(--font-serif);
-	font-weight: 600;
-	letter-spacing: -0.02em;
-}
-
-.notion-text {
-	font-family: var(--font-sans);
-	line-height: 1.6;
-}
-
-.notion-mono {
-	font-family: var(--font-mono);
-	font-size: 0.9em;
-	background: var(--color-surface-hover);
-	padding: 0.2em 0.4em;
-	border-radius: var(--radius-sm);
-}
-
-/* Subtle animation for interactive elements */
-.notion-interactive {
-	transition:
-		background-color 0.15s ease,
-		box-shadow 0.15s ease,
-		transform 0.15s ease;
-}
-
-.notion-interactive:hover {
-	background-color: var(--color-surface-hover);
-}
-
-.notion-interactive:active {
-	background-color: var(--color-surface-active);
-	transform: scale(0.98);
-}
-
-/* Button base reset for Notion-style buttons */
+/* Button base reset */
 button {
 	font-family: inherit;
 	font-size: inherit;
 	line-height: inherit;
 	color: inherit;
 	cursor: pointer;
+	background: none;
+	border: none;
+	padding: 0;
 }
 
 /* Input base reset */
@@ -212,15 +199,17 @@ select {
 	line-height: inherit;
 }
 
-/* Smooth transitions globally */
-*:not(path):not(g) {
-	transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
-		transform;
-	transition-duration: 0.12s;
-	transition-timing-function: ease-out;
+/* Smooth transitions globally - reduced motion support */
+@media (prefers-reduced-motion: no-preference) {
+	*:not(path):not(g) {
+		transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow,
+			transform;
+		transition-duration: 0.15s;
+		transition-timing-function: ease-out;
+	}
 }
 
-/* Remove default transitions for certain elements */
+/* Remove default transitions for inputs */
 input,
 textarea {
 	transition: none;
@@ -229,4 +218,81 @@ textarea {
 input:focus,
 textarea:focus {
 	transition: box-shadow 0.15s ease;
+}
+
+/* Utility classes */
+.font-display {
+	font-family: var(--font-display);
+}
+
+.font-sans {
+	font-family: var(--font-sans);
+}
+
+.font-mono {
+	font-family: var(--font-mono);
+}
+
+/* Mode-specific utilities */
+.mode-research {
+	--mode-color: var(--color-mode-research);
+	--mode-subtle: var(--color-mode-research-subtle);
+	--mode-muted: var(--color-mode-research-muted);
+}
+
+.mode-project {
+	--mode-color: var(--color-mode-project);
+	--mode-subtle: var(--color-mode-project-subtle);
+	--mode-muted: var(--color-mode-project-muted);
+}
+
+.mode-reference {
+	--mode-color: var(--color-mode-reference);
+	--mode-subtle: var(--color-mode-reference-subtle);
+	--mode-muted: var(--color-mode-reference-muted);
+}
+
+/* Subtle card hover effect */
+.card-hover {
+	transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card-hover:hover {
+	box-shadow: var(--shadow-md);
+	border-color: var(--color-border-strong);
+}
+
+/* Sidebar animations */
+@keyframes slideIn {
+	from {
+		transform: translateX(-100%);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.animate-slide-in {
+	animation: slideIn 0.2s ease-out;
+}
+
+.animate-fade-in {
+	animation: fadeIn 0.15s ease-out;
+}
+
+/* Mobile overlay backdrop */
+.sidebar-backdrop {
+	background: rgba(0, 0, 0, 0.3);
+	backdrop-filter: blur(2px);
 }

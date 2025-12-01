@@ -1,7 +1,7 @@
 # Session Context - Homelab Notebook
 
 **Last Updated:** 2025-12-01
-**Session Purpose:** Fix app initialization and PocketBase integration
+**Session Purpose:** UI Redesign - Notion-inspired sidebar layout
 
 ---
 
@@ -11,14 +11,10 @@
 |-------|--------|-------|
 | Project Brief v2 | COMPLETE | .docs/homelab-notebook-brief-v1.md |
 | UI/UX Redesign | COMPLETE | .docs/ui-ux-redesign-v2.md |
-| Migration Phase 1 | COMPLETE | Core structure, routes, AppShell, sidebar |
-| Migration Phase 2 | COMPLETE | Entry features, forms, timeline, editor, tags |
-| Migration Phase 3 | COMPLETE | Projects & organization |
-| Migration Phase 4 | COMPLETE | Search & navigation (FlexSearch, ⌘K) |
-| Migration Phase 5 | COMPLETE | Mode promotion, cross-refs, dashboard |
-| Migration Phase 6 | COMPLETE | Polish, loading states, AI stubs |
+| Migration Phase 1-6 | COMPLETE | Core structure, features, polish |
 | PocketBase Setup | COMPLETE | Collections created, API rules configured |
 | App Init Fix | COMPLETE | Fixed SSR hydration blocking issue |
+| UI Refresh | COMPLETE | Notion-inspired sidebar layout with mobile support |
 
 **Mode:** DELIVERY (practical utility focus)
 
@@ -26,21 +22,73 @@
 
 ## Current State
 
-### Today's Session (2025-12-01) - Bug Fixes
+### Today's Session (2025-12-01) - UI Redesign
 
-#### Issues Fixed
+#### Changes Made
 
-1. **CSS @import order error** - Google Fonts `@import` was after Tailwind, causing PostCSS error. Moved fonts import to top of `app.css`.
+1. **New Sidebar Layout** - Redesigned with:
+   - Mode navigation (Research/Project/Reference) with subtle color-coded icons
+   - Collapsible Projects section (shows 5 most recent)
+   - Collapsible Recent entries section (shows 4 most recent)
+   - Quick Access (Tags, Archived)
+   - Search footer with ⌘K hint
+   - Mobile responsive with hamburger menu and slide-out drawer
 
-2. **PocketBase API 403 errors** - All collection API rules were set to "Superusers only". Unlocked and cleared rules for `entries`, `projects`, `tags` collections to allow public access.
+2. **Dashboard Redesign** - Clean welcome card + mode cards layout:
+   - Welcome message with entry/project count
+   - Three mode cards with descriptions and entry counts
+   - Subtle hover effects with mode-colored borders
 
-3. **App stuck on loading spinner** - SSR hydration issue where `onMount` wasn't executing to flip `loading` from `true` to `false`. Root cause likely FlexSearch module-level subscription blocking hydration. Fixed by removing loading gate entirely - app now renders immediately and loads data in background.
+3. **Typography & Theme** - Notion-inspired styling:
+   - System sans-serif throughout (SF Pro on Mac)
+   - Warm gray text (`#37352f`)
+   - Subtle borders (`rgba(55, 53, 47, 0.09)`)
+   - Mode colors: Blue (research), Orange (project), Teal (reference)
+   - Notion-style shadows and focus states
 
-#### Configuration Changes
+4. **Mobile Support** - Full responsive design:
+   - Hamburger menu in mobile header
+   - Slide-out sidebar with backdrop
+   - Auto-close sidebar on navigation
 
-- **PocketBase instance**: Running on port 8095 (not 8090)
-- **ENV**: `PUBLIC_POCKETBASE_URL=http://localhost:8095` in `.env.local`
-- **API Rules**: All collections (entries, projects, tags) have empty rules (public access for dev)
+#### Files Modified
+
+- `src/app.css` - Complete theme overhaul (Notion-inspired)
+- `src/lib/components/layout/Sidebar.svelte` - New sidebar with all sections
+- `src/lib/components/layout/AppShell.svelte` - Mobile menu support
+- `src/lib/components/layout/Header.svelte` - Updated styling
+- `src/routes/+page.svelte` - New dashboard layout
+
+---
+
+## Design System
+
+### Colors (CSS Variables)
+
+```css
+/* Text */
+--color-text: #37352f;
+--color-text-muted: #9b9a97;
+
+/* Surfaces */
+--color-background-secondary: #fbfbfa;
+--color-surface-hover: #f7f6f3;
+
+/* Mode Colors */
+--color-mode-research: #2383e2;    /* Blue */
+--color-mode-project: #d9730d;     /* Orange */
+--color-mode-reference: #0f7b6c;   /* Teal */
+
+/* Primary */
+--color-primary: #2383e2;          /* Notion blue */
+```
+
+### Typography
+
+- **Font**: System sans-serif stack (`ui-sans-serif, -apple-system...`)
+- **Headers**: font-weight 600, letter-spacing -0.02em
+- **Body**: 14px base, line-height 1.5
+- **Numbers**: `.tabular-nums` class for aligned figures
 
 ---
 
@@ -61,54 +109,22 @@
 - View preferences (persisted to localStorage)
 
 ### Routes
-- `/` - Dashboard with mode overview, recent entries, active projects
-- `/research`, `/research/new`, `/research/[id]`, `/research/[id]/edit`
-- `/project`, `/project/new`, `/project/[id]`, `/project/[id]/edit`
-- `/reference`, `/reference/new`, `/reference/[id]`, `/reference/[id]/edit`
+- `/` - Dashboard with mode overview
+- `/research`, `/project`, `/reference` - Mode views with CRUD
 - `/projects`, `/projects/[id]` - Project management
 - `/tags` - Tag management
-- `/recent` - Recent entries across all modes
+- `/recent` - Recent entries
 - `/archived` - Archived entries
-- `/settings` - View preferences and keyboard shortcuts
-
-### Components
-- **Layout:** AppShell, Sidebar, Header, Toast
-- **UI:** Button, Input, Badge, Modal, Skeleton, EmptyState, ErrorBanner
-- **Editor:** MarkdownEditor, TagInput
-- **Features:** QuickCaptureModal, NewProjectModal, PromoteEntryModal, LinkEntriesModal
-- **Nav:** GlobalSearch
-
-### Stores
-- `entries` - Entry CRUD with mode filtering
-- `projects` - Project management
-- `tags` - Tag management
-- `ui` - UI state, toasts, view preferences
-- `search` - FlexSearch integration
-
-### Services
-- `pocketbase.ts` - PocketBase client and CRUD operations
-- `ai.ts` - Ollama integration stubs (for future AI features)
+- `/settings` - View preferences
 
 ---
 
-## Key Architecture Decisions
+## Configuration
 
-### Mode Philosophy
-- **Primary mode with promotion** - Entries start in one mode, can be promoted/moved
-- **Projects optional** - Entries don't require a project association
-- **Flexible timeline** - Both newest-first and oldest-first views available
-
-### Data Model
-```
-entries: id, mode, title, content, url, project, tags[], linked_entries[], promoted_from, archived
-projects: id, name, description, status, color
-tags: id, name, category, color, auto_generated
-```
-
-### Mode Colors
-- Research: Blue (`text-blue-600`, `bg-blue-50`)
-- Project: Amber (`text-amber-600`, `bg-amber-50`)
-- Reference: Green (`text-green-600`, `bg-green-50`)
+- **PocketBase instance**: Running on port 8095
+- **ENV**: `PUBLIC_POCKETBASE_URL=http://localhost:8095` in `.env.local`
+- **API Rules**: All collections have empty rules (public access for dev)
+- **PocketBase Admin**: http://localhost:8095/_/
 
 ---
 
@@ -129,17 +145,8 @@ tags: id, name, category, color, auto_generated
 
 ## Reference Files
 
-- `.docs/homelab-notebook-brief-v1.md` - Alternative project brief (three-mode system)
-- `.docs/ui-ux-redesign-v2.md` - Comprehensive UI/UX specification
-- `CLAUDE.md` - Updated project documentation
+- `.docs/homelab-notebook-brief-v1.md` - Project brief
+- `.docs/ui-ux-redesign-v2.md` - UI/UX specification
+- `CLAUDE.md` - Project documentation
 - `src/lib/types/index.ts` - TypeScript types and mode configs
-- `src/lib/services/pocketbase.ts` - PocketBase integration
-- `src/lib/services/ai.ts` - AI extension stubs
-
----
-
-## PocketBase Admin
-
-- **URL**: http://localhost:8095/_/
-- **Collections**: users, entries, projects, tags
-- **API Rules**: All unlocked (empty = public access for dev)
+- `src/app.css` - Theme and design system
