@@ -1,7 +1,7 @@
 # Session Context - Homelab Notebook
 
-**Last Updated:** 2025-12-01 (Night)
-**Session Purpose:** Carta Markdown Editor Integration
+**Last Updated:** 2025-12-02
+**Session Purpose:** Pre-Deployment Review
 
 ---
 
@@ -18,9 +18,10 @@
 | Deployment Strategy | COMPLETE | .docs/deployment-strategy-updated.md |
 | Production PocketBase | COMPLETE | Connected to pocketbase.haugaard.dev |
 | Dependency Fix | COMPLETE | Resolved vite version conflict |
-| File Attachments | COMPLETE | Components ready, needs PocketBase field |
+| File Attachments | COMPLETE | Components ready, PocketBase field added |
 | Search Relocation | COMPLETE | Moved to Header center |
-| Carta Editor | COMPLETE | On `editor` branch, ready to merge |
+| Carta Editor | COMPLETE | Merged to main |
+| Pre-Deploy Review | IN PROGRESS | Verify PocketBase, then deploy |
 
 **Mode:** DELIVERY (practical utility focus)
 
@@ -28,18 +29,32 @@
 
 ## Current State
 
-### Latest Session (2025-12-01 Night) - Carta Editor
+### Latest Session (2025-12-02) - Pre-Deployment
 
-#### Carta Markdown Editor (`editor` branch)
+#### Completed
+- Merged `editor` branch to `main` (Carta markdown editor)
+- Pushed to GitHub
+- Cleaned up local branch
+
+#### Current Status
+- App feature-complete for v0.1
+- PocketBase collections configured (including attachments)
+- Ready for Fly.io deployment with Tigris object storage
+
+#### Pending (post-deploy)
+- Upgrade vitest to v4 (dev tooling, tracked in `.claude/todo.md`)
+- Test file attachments in production
+
+---
+
+### Previous Session (2025-12-01 Night) - Carta Editor
+
+#### Carta Markdown Editor
 - Replaced basic textarea/preview with Carta markdown editor
 - Added `carta-md` (4.11.1) and `isomorphic-dompurify` for XSS protection
 - Tabs mode (Write / Preview) with live rendering
 - Themed to match app CSS variables
 - Same `bind:value` API — drop-in replacement
-- **Commit**: `48c17b8`
-
-#### Pending (tracked in `.claude/todo.md`)
-- Upgrade vitest to v4 (resolves vite version conflict in `pnpm check`)
 
 ---
 
@@ -101,23 +116,22 @@
 
 ---
 
-## PocketBase Setup Required
+## PocketBase Collections (Verified)
 
-Add `attachments` field to `entries` collection:
-- **Field type**: File
-- **Max select**: Multiple
-- **Max size**: 10MB
-- **Allowed types**: (optional) `application/pdf, image/*, application/msword, application/vnd.openxmlformats-officedocument.*`
+Collections configured at `pocketbase.haugaard.dev`:
+- **entries** - Main content (includes `attachments` file field)
+- **projects** - Project organizers
+- **tags** - Tag taxonomy
 
 ---
 
 ## Next Actions
 
-1. Merge `editor` branch to `main`
-2. Add `attachments` field to PocketBase `entries` collection
-3. Test file upload/download functionality
-4. Deploy frontend to VPS (notebook.haugaard.dev)
-5. Upgrade vitest to v4 (on main)
+1. Final review of PocketBase collections
+2. Deploy to Fly.io using `deploy-guide` skill
+3. Configure Tigris object storage for attachments
+4. Test app in production
+5. Upgrade vitest to v4 (post-deploy)
 
 ---
 
