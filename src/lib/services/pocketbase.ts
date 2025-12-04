@@ -15,6 +15,12 @@ export const pb = new PocketBase(pocketbaseUrl);
 // Export the base URL for file access (always use public URL for browser file downloads)
 export { pocketbaseUrl };
 
+// Load auth from cookies in the browser
+// This ensures the client-side auth state is synced with the server-side session
+if (browser) {
+	pb.authStore.loadFromCookie(document.cookie);
+}
+
 // Disable auto-cancellation for better UX
 pb.autoCancellation(false);
 
