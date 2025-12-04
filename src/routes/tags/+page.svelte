@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Plus, Tags as TagsIcon, Edit2, Trash2, Merge } from 'lucide-svelte';
 	import { Header } from '$lib/components/layout';
-	import { Button, Badge, Modal, Input } from '$lib/components/ui';
+	import { Button, Badge, Modal, Input, ColorPicker } from '$lib/components/ui';
 	import { tags, toasts } from '$lib/stores';
 	import type { Tag, TagCategory } from '$lib/types';
 
@@ -223,21 +223,7 @@
 			<label for="tag-color" class="block text-sm font-medium text-[var(--color-text)] mb-1.5">
 				Color (optional)
 			</label>
-			<div class="flex gap-2">
-				<Input
-					id="tag-color"
-					type="text"
-					bind:value={tagColor}
-					placeholder="#3B82F6"
-					class="flex-1"
-				/>
-				{#if tagColor}
-					<div
-						class="w-10 h-10 rounded-md border border-[var(--color-border)]"
-						style="background-color: {tagColor}"
-					></div>
-				{/if}
-			</div>
+			<ColorPicker id="tag-color" bind:value={tagColor} />
 		</div>
 	</form>
 
