@@ -104,7 +104,7 @@
 			<MarkdownEditor
 				bind:value={content}
 				placeholder="Document your progress, discoveries, issues, and next steps..."
-				minRows={12}
+				minHeight="300px"
 			/>
 		</div>
 
@@ -112,18 +112,18 @@
 		<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 			<!-- Tags -->
 			<div>
-				<label class="block text-sm font-medium text-[var(--color-text)] mb-1.5">
+				<label for="tags-input" class="block text-sm font-medium text-[var(--color-text)] mb-1.5">
 					Tags
 				</label>
-				<TagInput bind:selectedTags availableTags={$tags} />
+				<TagInput bind:selectedTags availableTags={$tags} id="tags-input" />
 			</div>
 
 			<!-- Attachments -->
 			<div>
-				<label class="block text-sm font-medium text-[var(--color-text)] mb-1.5">
+				<label for="attachments-input" class="block text-sm font-medium text-[var(--color-text)] mb-1.5">
 					Attachments
 				</label>
-				<AttachmentDropZone bind:files={attachmentFiles} />
+				<AttachmentDropZone bind:files={attachmentFiles} id="attachments-input" />
 			</div>
 		</div>
 	</div>

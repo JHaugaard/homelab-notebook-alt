@@ -8,9 +8,10 @@
 		selectedTags: string[];
 		availableTags?: Tag[];
 		placeholder?: string;
+		id?: string;
 	}
 
-	let { selectedTags = $bindable([]), availableTags, placeholder = 'Add tags...' }: Props = $props();
+	let { selectedTags = $bindable([]), availableTags, placeholder = 'Add tags...', id }: Props = $props();
 
 	// Use provided tags or fall back to store
 	let allTags = $derived(availableTags ?? $tagsStore);
@@ -93,6 +94,7 @@
 			bind:this={inputEl}
 			bind:value={inputValue}
 			type="text"
+			{id}
 			{placeholder}
 			class="flex-1 min-w-24 bg-transparent text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-muted)] focus:outline-none"
 			onkeydown={handleKeydown}

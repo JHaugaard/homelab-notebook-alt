@@ -6,9 +6,10 @@
 		onFilesChange?: (files: globalThis.File[]) => void;
 		accept?: string;
 		maxSizeMB?: number;
+		id?: string;
 	}
 
-	let { files = $bindable([]), onFilesChange, accept, maxSizeMB = 10 }: Props = $props();
+	let { files = $bindable([]), onFilesChange, accept, maxSizeMB = 10, id }: Props = $props();
 
 	let isDragging = $state(false);
 	let error = $state<string | null>(null);
@@ -102,10 +103,10 @@
 		ondragleave={handleDragLeave}
 		role="button"
 		tabindex="0"
-		onkeydown={(e) => e.key === 'Enter' && document.getElementById('file-input')?.click()}
+		onkeydown={(e) => e.key === 'Enter' && document.getElementById(id || 'file-input')?.click()}
 	>
 		<input
-			id="file-input"
+			id={id || 'file-input'}
 			type="file"
 			multiple
 			{accept}

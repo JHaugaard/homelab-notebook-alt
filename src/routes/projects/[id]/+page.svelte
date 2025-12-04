@@ -87,6 +87,7 @@
 	</div>
 {:else if project}
 	{@const status = STATUS_CONFIGS[project.status]}
+	{@const currentProject = project}
 
 	<Header title={project.name} subtitle={project.description}>
 		{#snippet actions()}
@@ -96,19 +97,19 @@
 			</Button>
 
 			<!-- Status toggle buttons -->
-			{#if project.status !== 'active'}
+			{#if currentProject.status !== 'active'}
 				<Button variant="secondary" onclick={() => updateStatus('active')}>
 					<Play class="w-4 h-4" />
 					Activate
 				</Button>
 			{/if}
-			{#if project.status === 'active'}
+			{#if currentProject.status === 'active'}
 				<Button variant="secondary" onclick={() => updateStatus('paused')}>
 					<Pause class="w-4 h-4" />
 					Pause
 				</Button>
 			{/if}
-			{#if project.status !== 'completed'}
+			{#if currentProject.status !== 'completed'}
 				<Button variant="secondary" onclick={() => updateStatus('completed')}>
 					<CheckCircle class="w-4 h-4" />
 					Complete
@@ -152,7 +153,7 @@
 							<Button
 								variant="ghost"
 								size="sm"
-								onclick={() => goto(`/${mode}/new?project=${project.id}`)}
+								onclick={() => project && goto(`/${mode}/new?project=${project.id}`)}
 							>
 								<Plus class="w-4 h-4" />
 								Add
@@ -194,7 +195,7 @@
 						{@const Icon = modeIcons[mode.id]}
 						<Button
 							variant="secondary"
-							onclick={() => goto(`/${mode.id}/new?project=${project.id}`)}
+							onclick={() => project && goto(`/${mode.id}/new?project=${project.id}`)}
 						>
 							<Icon class="w-4 h-4 {mode.color}" />
 							New {mode.label}

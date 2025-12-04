@@ -20,6 +20,11 @@
 	const id = $derived($page.params.id);
 
 	onMount(async () => {
+		if (!id) {
+			toasts.error('Entry not found');
+			goto('/project');
+			return;
+		}
 		try {
 			entry = await entryService.getById(id);
 		} catch (error) {
@@ -94,7 +99,7 @@
 			<Button variant="ghost" onclick={() => (showLinkModal = true)}>
 				<Link2 class="w-4 h-4" />
 			</Button>
-			<Button variant="secondary" onclick={() => goto(`/project/${entry.id}/edit`)}>
+			<Button variant="secondary" onclick={() => entry && goto(`/project/${entry.id}/edit`)}>
 				<Edit class="w-4 h-4" />
 				Edit
 			</Button>
@@ -151,7 +156,7 @@
 			<div class="mt-8 pt-6 border-t border-[var(--color-border)]">
 				<h3 class="text-sm font-medium text-[var(--color-text-muted)] mb-3">Actions</h3>
 				<div class="flex gap-2">
-					<Button variant="secondary" onclick={() => goto(`/reference/new?from=${entry.id}`)}>
+					<Button variant="secondary" onclick={() => entry && goto(`/reference/new?from=${entry.id}`)}>
 						<ArrowUpRight class="w-4 h-4" />
 						Distill to Reference
 					</Button>

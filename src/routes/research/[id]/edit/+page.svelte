@@ -23,6 +23,11 @@
 	const id = $derived($page.params.id);
 
 	onMount(async () => {
+		if (!id) {
+			toasts.error('Entry not found');
+			goto('/research');
+			return;
+		}
 		try {
 			entry = await entryService.getById(id);
 			if (entry) {
@@ -50,6 +55,7 @@
 		}
 
 		saving = true;
+		if (!id) return;
 		try {
 			await entries.update(id, {
 				title: title.trim(),
@@ -130,8 +136,8 @@
 
 			<!-- Tags -->
 			<div>
-				<label class="block text-sm font-medium text-[var(--color-text)] mb-1.5">Tags</label>
-				<TagInput bind:selectedTags />
+				<label for="tags-input" class="block text-sm font-medium text-[var(--color-text)] mb-1.5">Tags</label>
+				<TagInput bind:selectedTags id="tags-input" />
 			</div>
 
 			<!-- Content -->

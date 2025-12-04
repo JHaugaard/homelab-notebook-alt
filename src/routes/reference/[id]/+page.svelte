@@ -20,6 +20,11 @@
 	const id = $derived($page.params.id);
 
 	onMount(async () => {
+		if (!id) {
+			toasts.error('Guide not found');
+			goto('/reference');
+			return;
+		}
 		try {
 			entry = await entryService.getById(id);
 		} catch (error) {
@@ -95,7 +100,7 @@
 			<Button variant="ghost" onclick={() => (showLinkModal = true)}>
 				<Link2 class="w-4 h-4" />
 			</Button>
-			<Button variant="secondary" onclick={() => goto(`/reference/${entry.id}/edit`)}>
+			<Button variant="secondary" onclick={() => entry && goto(`/reference/${entry.id}/edit`)}>
 				<Edit class="w-4 h-4" />
 				Edit
 			</Button>
