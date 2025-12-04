@@ -7,3 +7,4 @@ export { default as EmptyState } from './EmptyState.svelte';
 export { default as ErrorBanner } from './ErrorBanner.svelte';
 export { default as AttachmentDropZone } from './AttachmentDropZone.svelte';
 export { default as AttachmentList } from './AttachmentList.svelte';
+export { default as ColorPicker } from './ColorPicker.svelte';
