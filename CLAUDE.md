@@ -87,24 +87,30 @@ Open http://localhost:5173 to see the app.
 
 ## Infrastructure & Hosting
 
-### Self-Hosted Infrastructure (Hostinger VPS8)
+### Fly.io (Production)
+
+This project is deployed on Fly.io, sharing a PocketBase instance with other apps.
+
+| Component | URL | Notes |
+|-----------|-----|-------|
+| **App** | https://homelab-notebook.fly.dev | Primary Fly.io URL |
+| **App** | https://homelab-notebook.haugaard.app | Custom domain |
+| **PocketBase API** | http://proposaltracker-api.internal:8080 | Internal Fly network |
+| **PocketBase Admin** | https://proposaltracker-api.fly.dev/_/ | Admin UI |
+
+### Shared PocketBase Instance
+
+The PocketBase instance (`proposaltracker-api`) is shared across multiple apps:
+- User accounts work across all apps (single sign-on)
+- Each app has its own collections (`entries`, `projects`, `tags` for this app)
+- Internal networking via Fly's private network
+
+### VPS Infrastructure (Other Services)
+
+The Hostinger VPS hosts other homelab services (not this project):
 - **VPS**: 8 cores, 32GB RAM, 400GB storage
 - **Domain**: haugaard.dev
-- **Reverse Proxy**: Caddy with automatic HTTPS
-- **Docker Network**: homelab-net
-
-### Available Backend Services
-| Service | URL | Purpose |
-|---------|-----|---------|
-| Supabase | supabase.haugaard.dev | PostgreSQL, Auth (not used for this project) |
-| PocketBase | pocketbase.haugaard.dev | Backend for this project |
-| n8n | n8n.haugaard.dev | Workflow automation |
-| Ollama | ollama.haugaard.dev | Local LLM inference (future AI features) |
-
-### Project-Specific Hosting
-- **Production URL**: notebook.haugaard.dev
-- **Backend**: Existing PocketBase instance (pocketbase:8090 internal)
-- **Frontend**: SvelteKit container on homelab-net
+- **Services**: Supabase, n8n, Ollama, etc.
 
 ---
 
@@ -268,9 +274,16 @@ docker compose exec pocketbase cp /pb/pb_data/data.db /pb/pb_data/backup.db
 ```bash
 # .env.local (development)
 PUBLIC_POCKETBASE_URL=http://localhost:8090
+```
 
-# Production (set in Docker or hosting)
-PUBLIC_POCKETBASE_URL=https://pocketbase.haugaard.dev
+Production environment variable is set via Fly.io secrets:
+
+```bash
+# View current secrets
+fly secrets list
+
+# The production PocketBase URL uses Fly's internal network
+fly secrets set PUBLIC_POCKETBASE_URL="http://proposaltracker-api.internal:8080"
 ```
 
 ### Authentication Flow
@@ -320,28 +333,40 @@ See `.docs/ui-ux-redesign-v2.md` for complete specification including:
 ## Deployment
 
 ### Deployment Workflow
+
+Deployment is automated via GitHub Actions:
+
 1. Push to `main` branch
-2. SSH to VPS: `ssh john@72.60.27.146`
-3. Pull and rebuild:
-   ```bash
-   cd ~/homelab-notebook
-   git pull
-   docker compose up -d --build
-   ```
+2. CI workflow runs (lint, type-check, build)
+3. On CI success, Deploy workflow triggers automatically
+4. Fly.io builds and deploys the Docker image
+
+### Manual Deployment
+
+```bash
+# Deploy directly (bypasses CI)
+fly deploy
+
+# Check status
+fly status
+fly logs
+```
 
 ### Deployment Checklist
+
 - [ ] All tests passing locally
 - [ ] Build succeeds (`pnpm build`)
-- [ ] Environment variables set in production
+- [ ] Environment variables set (`fly secrets list`)
 - [ ] PocketBase collections configured
-- [ ] Caddy routing configured
 
 ### Rollback Procedure
+
 ```bash
-# On VPS
-docker compose down
-git checkout <previous-tag>
-docker compose up -d --build
+# List recent deployments
+fly releases
+
+# Roll back to previous version
+fly deploy --image <previous-image>
 ```
 
 ---
@@ -361,20 +386,30 @@ docker compose up -d --build
 - `.docs/tech-stack-decision.md` - Technology choices
 - `.docs/deployment-strategy.md` - Deployment plan
 
-### Homelab Infrastructure
-- Caddy config: `/etc/caddy/Caddyfile` on VPS
-- Docker network: `homelab-net`
-- Backups: Backblaze B2
+### Fly.io Infrastructure
+
+- App config: `fly.toml`
+- Deployment logs: `fly logs`
+- PocketBase admin: <https://proposaltracker-api.fly.dev/_/>
 
 ---
 
 ## Troubleshooting
 
 ### PocketBase Connection Failed
+
 ```
 Error: Failed to connect to PocketBase
 ```
-**Solution**: Ensure PocketBase container is running: `docker compose up -d pocketbase`
+
+**Local development**: Ensure PocketBase container is running: `docker compose up -d pocketbase`
+
+**Production**: Check Fly.io internal networking:
+
+```bash
+fly ssh console
+curl http://proposaltracker-api.internal:8080/api/health
+```
 
 ### Tailwind Classes Not Working
 **Solution**: Check that the file is included in `tailwind.config.ts` content paths

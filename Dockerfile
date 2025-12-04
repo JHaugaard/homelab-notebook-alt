@@ -34,7 +34,8 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 
 # Build-time env vars for SvelteKit static imports
-ARG PUBLIC_POCKETBASE_URL=https://pocketbase.haugaard.dev
+# Note: For Fly.io deployment, this is overridden by the fly secrets
+ARG PUBLIC_POCKETBASE_URL=http://proposaltracker-api.internal:8080
 ENV PUBLIC_POCKETBASE_URL=$PUBLIC_POCKETBASE_URL
 
 RUN pnpm build

@@ -15,7 +15,8 @@ jobs:
     name: Test & Build
     runs-on: ubuntu-latest
     env:
-      PUBLIC_POCKETBASE_URL: https://pocketbase.haugaard.dev
+      # CI uses the external URL since it can't access Fly's internal network
+      PUBLIC_POCKETBASE_URL: https://proposaltracker-api.fly.dev
 
     steps:
       - name: Checkout code

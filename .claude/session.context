@@ -1,7 +1,7 @@
 # Session Context - Homelab Notebook
 
 **Last Updated:** 2025-12-03
-**Session Purpose:** Type Errors Fixed
+**Session Purpose:** Authentication & Infrastructure Cleanup
 
 ---
 
@@ -12,18 +12,20 @@
 | Project Brief v2 | COMPLETE | .docs/homelab-notebook-brief-v1.md |
 | UI/UX Redesign | COMPLETE | .docs/ui-ux-redesign-v2.md |
 | Migration Phase 1-6 | COMPLETE | Core structure, features, polish |
-| PocketBase Setup | COMPLETE | Collections on production VPS |
 | App Init Fix | COMPLETE | Fixed SSR hydration blocking issue |
 | UI Refresh | COMPLETE | Notion-inspired sidebar layout with mobile support |
 | Deployment Strategy | COMPLETE | .docs/deployment-strategy-updated.md |
-| Production PocketBase | COMPLETE | Connected to pocketbase.haugaard.dev |
 | Dependency Fix | COMPLETE | Resolved vite version conflict |
 | File Attachments | COMPLETE | Components ready, PocketBase field added |
 | Search Relocation | COMPLETE | Moved to Header center |
 | Carta Editor | COMPLETE | Merged to main |
 | Fly.io Deployment | COMPLETE | Live at homelab-notebook.fly.dev |
 | CI/CD Pipeline | COMPLETE | GitHub Actions → Fly.io auto-deploy |
-| **Type Error Fixes** | **COMPLETE** | All TypeScript/Svelte errors resolved |
+| Type Error Fixes | COMPLETE | All TypeScript/Svelte errors resolved |
+| **Authentication** | **COMPLETE** | Login page, server-side guards, logout |
+| **PocketBase Migration** | **COMPLETE** | Collections on Fly.io PocketBase |
+| **Infrastructure Cleanup** | **COMPLETE** | Removed VPS references |
+| **Tigris Storage** | **PENDING** | Required for persistent file attachments |
 
 **Mode:** DELIVERY (practical utility focus)
 
@@ -31,43 +33,44 @@
 
 ## Current State
 
-### Latest Session (2025-12-03) - Type Error Fixes
+### Latest Session (2025-12-03) - Authentication & Infrastructure
 
 #### Completed
-- Fixed all 22 TypeScript/Svelte type errors
-- Upgraded vitest from v2.1 to v4.0.15 for vite@7 compatibility
-- Added null checks for `page.params.id` in route components
-- Added null guards for entry access in onclick handlers
-- Fixed `minRows` prop → `minHeight` in MarkdownEditor usage
-- Added `id` prop support to TagInput and AttachmentDropZone for a11y
-- Fixed type narrowing in `projects/[id]` snippet with `@const`
+1. **Authentication Implementation**
+   - Created `/login` page with email/password form
+   - Added `hooks.server.ts` for server-side auth guards
+   - Created auth store (`src/lib/stores/auth.ts`)
+   - Added logout button to sidebar
+   - All routes now require authentication
 
-#### Commit
-- `0c6ac6c` - fix: resolve all TypeScript and Svelte type errors
+2. **PocketBase Migration to Fly.io**
+   - Created `entries`, `projects`, `tags` collections on `proposaltracker-api`
+   - Set API rules (`@request.auth.id != ""`) for all collections
+   - Shared user account works across apps (SSO with proposaltracker)
+
+3. **Infrastructure Cleanup**
+   - Updated CLAUDE.md with correct Fly.io URLs
+   - Fixed Dockerfile default PocketBase URL
+   - Fixed CI workflow PocketBase URL
+   - Updated .env.local for local development
+   - Deleted outdated `.docs/pocketbase-security-setup.md`
+   - Cleaned build artifacts with old references
+
+#### Files Created
+- `src/routes/login/+page.svelte` - Login page
+- `src/routes/login/+layout.svelte` - Standalone layout for login
+- `src/hooks.server.ts` - Server-side auth guard
+- `src/app.d.ts` - TypeScript types for locals
+- `src/lib/stores/auth.ts` - Auth state management
+- `.docs/pocketbase-flyio-setup.md` - Collection setup guide
 
 #### Files Modified
-- `package.json`, `pnpm-lock.yaml` - vitest v4.0.15
-- `src/lib/components/editor/TagInput.svelte` - Added `id` prop
-- `src/lib/components/ui/AttachmentDropZone.svelte` - Added `id` prop
-- `src/routes/project/[id]/+page.svelte` - Null checks
-- `src/routes/project/[id]/edit/+page.svelte` - Null checks, a11y
-- `src/routes/project/new/+page.svelte` - minHeight fix, a11y
-- `src/routes/projects/[id]/+page.svelte` - Type narrowing fix
-- `src/routes/reference/[id]/+page.svelte` - Null checks
-- `src/routes/reference/[id]/edit/+page.svelte` - Null checks, a11y
-- `src/routes/reference/new/+page.svelte` - minHeight fix, a11y
-- `src/routes/research/[id]/+page.svelte` - Null checks
-- `src/routes/research/[id]/edit/+page.svelte` - Null checks, a11y
-- `src/routes/research/new/+page.svelte` - a11y
-
----
-
-### Previous Session (2025-12-03) - CI/CD Implementation
-
-- Implemented full CI/CD pipeline using **ci-cd-implement** skill
-- CI workflow: lint, type-check, test, build on push/PR
-- CD workflow: auto-deploy to Fly.io after CI passes on `main`
-- Configured `FLY_API_TOKEN` secret in GitHub
+- `src/lib/stores/index.ts` - Export auth store
+- `src/lib/components/layout/Sidebar.svelte` - Added logout button
+- `CLAUDE.md` - Updated infrastructure section
+- `Dockerfile` - Updated default PocketBase URL
+- `.github/workflows/ci.yml` - Updated PocketBase URL
+- `.env.local` - Updated for local dev
 
 ---
 
@@ -75,10 +78,17 @@
 
 ### Production (Fly.io)
 - **App URL:** https://homelab-notebook.fly.dev
-- **Backend:** https://pocketbase.haugaard.dev (VPS)
+- **Custom Domain:** https://homelab-notebook.haugaard.app
+- **PocketBase API:** http://proposaltracker-api.internal:8080 (internal)
+- **PocketBase Admin:** https://proposaltracker-api.fly.dev/_/
 - **Region:** sjc (San Jose)
 - **VM:** shared-cpu-1x, 512MB RAM
 - **Auto-deploy:** On push to `main` via GitHub Actions
+
+### Shared PocketBase Instance
+- `proposaltracker-api` serves multiple apps
+- User accounts shared (SSO)
+- Collections per app: `entries`, `projects`, `tags` (homelab-notebook)
 
 ### CI/CD (GitHub Actions)
 - **CI Trigger:** Push to `main`/`dev`, PRs to `main`
@@ -86,8 +96,8 @@
 - **Secrets Required:** `FLY_API_TOKEN`
 
 ### Local Development
-- **PocketBase:** `https://pocketbase.haugaard.dev`
-- **ENV:** `PUBLIC_POCKETBASE_URL=https://pocketbase.haugaard.dev` in `.env.local`
+- **PocketBase:** `http://localhost:8090` (Docker container)
+- **ENV:** `PUBLIC_POCKETBASE_URL=http://localhost:8090` in `.env.local`
 
 ---
 
@@ -99,8 +109,8 @@ pnpm dev
 
 # Run checks
 pnpm lint          # ESLint
-pnpm check         # TypeScript/Svelte (0 errors, 1 warning)
-pnpm test          # Vitest (v4.0.15, compatible with Vite 7)
+pnpm check         # TypeScript/Svelte
+pnpm test          # Vitest
 pnpm build         # Production build
 
 # Deploy (manual - usually auto via CI/CD)
@@ -111,15 +121,25 @@ gh run list --limit 5
 
 # View Fly.io logs
 fly logs
+
+# PocketBase admin
+open https://proposaltracker-api.fly.dev/_/
 ```
 
 ---
 
-## Next Actions
+## Critical Next Action
 
-1. Remove `|| true` from CI workflow (type errors now fixed)
-2. Optional: Configure Tigris storage for attachments
-3. Continue feature development
+### Configure Tigris Storage (REQUIRED)
+
+File attachments are currently stored on ephemeral Fly.io VM storage. They will be **lost on redeploy**.
+
+**Before uploading any attachments:**
+1. Create Tigris bucket: `fly storage create`
+2. Configure PocketBase S3 settings in admin UI
+3. Set Fly secrets for S3 credentials
+
+See `.docs/deployment-strategy-updated.md` lines 224-282 for details.
 
 ---
 
@@ -129,6 +149,7 @@ fly logs
 - `.github/workflows/deploy.yml` - CD pipeline
 - `CICD-SECRETS.md` - Secrets documentation
 - `.docs/deployment-log.md` - Deployment runbook
+- `.docs/pocketbase-flyio-setup.md` - Collection setup guide
+- `.docs/deployment-strategy-updated.md` - Full deployment strategy
 - `fly.toml` - Fly.io configuration
 - `CLAUDE.md` - Project documentation
-- `eslint.config.js` - Lint configuration
