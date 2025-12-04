@@ -3,11 +3,17 @@ import { browser } from '$app/environment';
 import { PUBLIC_POCKETBASE_URL } from '$env/static/public';
 import type { Entry, Project, Tag, EntryFormData, ProjectFormData, TagFormData } from '$lib/types';
 
-// Initialize PocketBase client
-export const pb = new PocketBase(PUBLIC_POCKETBASE_URL);
+// Use internal URL for server-side, public URL for browser
+// The internal URL (http://...internal:8080) only works within Fly's network
+// Browser requests must use the public HTTPS URL
+const POCKETBASE_PUBLIC_URL = 'https://proposaltracker-api.fly.dev';
+const pocketbaseUrl = browser ? POCKETBASE_PUBLIC_URL : PUBLIC_POCKETBASE_URL;
 
-// Export the base URL for file access
-export const pocketbaseUrl = PUBLIC_POCKETBASE_URL;
+// Initialize PocketBase client
+export const pb = new PocketBase(pocketbaseUrl);
+
+// Export the base URL for file access (always use public URL for browser file downloads)
+export { pocketbaseUrl };
 
 // Disable auto-cancellation for better UX
 pb.autoCancellation(false);
